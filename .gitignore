@@ -1,0 +1,6 @@
+node_modules/
+dist/win-unpacked/
+dist/*.blockmap
+*.adoc
+# 변환 결과 HTML (index.html 제외)
+dist/*.html

@@ -1,0 +1,54 @@
+{
+  "name": "pdf-to-asciidoc",
+  "version": "1.0.0",
+  "description": "PDF to AsciiDoc converter",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "convert": "node converter.js"
+  },
+  "build": {
+    "appId": "com.rootech.pdf-to-asciidoc",
+    "productName": "PDF to AsciiDoc",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "convert-core.js",
+      "index.html",
+      "assets/**",
+      "node_modules/**",
+      "!node_modules/.cache/**",
+      "!**/*.map"
+    ]
+  },
+  "pkg": {
+    "assets": [
+      "node_modules/pdf-parse/**/*",
+      "node_modules/@asciidoctor/core/dist/**/*"
+    ],
+    "targets": ["node18-win-x64"]
+  },
+  "keywords": [],
+  "author": "Rootech",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@asciidoctor/core": "^4.0.0",
+    "chalk": "^4.1.2",
+    "commander": "^9.5.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "electron": "^42.5.0",
+    "electron-builder": "^26.15.3"
+  }
+}
