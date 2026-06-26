@@ -18,18 +18,29 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: false,
     },
     backgroundColor: '#1e1e2e',
     show: false,
   });
 
   win.loadFile('index.html');
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => { win.show(); win.webContents.openDevTools(); });
+
+  // 메인 프로세스에서 드롭 파일 경로를 받아 렌더러로 전달
+  // (렌더러에서 file.path가 빈 문자열인 Electron 신버전 대응)
+  win.webContents.session.on('will-download', (e) => e.preventDefault());
+
   win.setMenuBarVisibility(false);
 }
 
 app.whenReady().then(createWindow);
 app.on('window-all-closed', () => app.quit());
+
+// ── IPC: 드롭 경로 검증 (렌더러에서 path가 비었을 때 대비) ──
+ipcMain.handle('resolve-drop-paths', async (_, paths) => {
+  return paths.filter(p => p && require('fs').existsSync(p));
+});
 
 // ── IPC: 파일 선택 다이얼로그 ──
 ipcMain.handle('select-files', async () => {
