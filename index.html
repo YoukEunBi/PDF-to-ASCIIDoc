@@ -220,22 +220,32 @@
     if (paths.length) addFiles(paths);
   });
 
-  // ── 드래그앤드롭 ──
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => {
+  // ── 드래그앤드롭 (창 전체를 드롭 영역으로) ──
+  let dragCounter = 0; // dragleave 오작동 방지용 카운터
+
+  document.addEventListener('dragenter', e => {
     e.preventDefault();
-    dropZone.classList.remove('drag-over');
-    const paths = Array.from(e.dataTransfer.files).map(f => f.path);
-    addFiles(paths);
+    dragCounter++;
+    dropZone.classList.add('drag-over');
   });
 
-  // 전체 창 드롭도 지원
-  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('dragleave', e => {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter === 0) dropZone.classList.remove('drag-over');
+  });
+
+  document.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy'; // 드롭 허용 커서 표시
+  });
+
   document.addEventListener('drop', e => {
     e.preventDefault();
-    const paths = Array.from(e.dataTransfer.files).map(f => f.path);
-    addFiles(paths);
+    dragCounter = 0;
+    dropZone.classList.remove('drag-over');
+    const paths = Array.from(e.dataTransfer.files).map(f => f.path).filter(Boolean);
+    if (paths.length) addFiles(paths);
   });
 
   // ── 출력 폴더 선택 ──
